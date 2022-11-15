@@ -1,0 +1,49 @@
+<!-- 
+
+register.html
+
+This document is the login page for the website.
+It collects and verifies the user's username and password information.
+If valid user information is provided, then the program will redirect
+to the website homepage.
+
+-->
+
+<!DOCTYPE html>
+<html>
+    <Head>
+        <Title>Register - Budget Tracker</Title>
+    </Head>
+    <body>
+        <h2><font color="#990033">Budget Tracker</font></h2>
+        <hr />
+        <h3>Register</h3>
+        <p>Submit a username and password to register.</p>
+
+        <!-- Provides a form for the user to enter and submit a new username + password -->
+        <form method="POST">
+            <table>
+                <!-- Username field -->
+                <tr>
+                    <td><label for="username">Username</label></td>
+                    <td><input name="username" id="username" required></td>
+                </tr>
+
+                <!-- Password field -->
+                <tr>
+                    <td><label for="password">Password</label></td>
+                    <td> <input type="password" name="password" id="password" required></td>
+                </tr>
+
+                <tr>
+                    <td colspan='2'><input type="submit" value="Register"></td>
+                </tr>
+            </table>
+        </form>
+
+        <!-- Displays any errors that occur (if the login failed) -->
+        {% if error %}
+        <p color="#FF0000">{{ error }}</p>
+        {% endif %}
+    </body>
+</html>
