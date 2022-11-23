@@ -35,7 +35,7 @@ from flask import session
 from passlib.hash import sha256_crypt
 
 app = Flask(__name__)
-app.secret_key = "sdev300"
+app.secret_key = "CMSC495"
 
 
 
