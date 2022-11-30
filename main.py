@@ -2,7 +2,7 @@
 
 main.py
 
-This code is used by flask to open particular pages on the website. 
+This code is used by flask to open particular pages on the website.
 
 At localhost:5000, the homepage will be loaded. If the user is not logged in, the page will
 not fully load and a link will be provided to enable the user to login.
@@ -34,11 +34,11 @@ from flask import redirect
 from flask import session
 from passlib.hash import sha256_crypt
 from utils import *
+from plaid_urls import plaid_urls
 
 app = Flask(__name__)
-app.register_blueprint('plaid_urls')
+app.register_blueprint(plaid_urls)
 app.secret_key = "CMSC495"
-
 
 
 @app.route('/')
@@ -46,29 +46,29 @@ def homepage():
     '''
     Loads the homepage
     '''
-    try:
-      request = AccountsGetRequest(
-          access_token=access_token
-      )
-      accounts_response = client.accounts_get(request)
-    except plaid.ApiException as e:
-      response = json.loads(e.body)
-      return jsonify({'error': {'status_code': e.status, 'display_message':
-                      response['error_message'], 'error_code': response['error_code'], 'error_type': response['error_type']}})
+    # try:
+    #   request = AccountsGetRequest(
+    #       access_token=access_token
+    #   )
+    #   accounts_response = client.accounts_get(request)
+    # except plaid.ApiException as e:
+    #     response = json.loads(e.body)
+    #     return jsonify({'error': {'status_code': e.status, 'display_message':
+    #                   response['error_message'], 'error_code': response['error_code'], 'error_type': response['error_type']}})
 
-    response = jsonify(accounts_response.to_dict()
+    # response = jsonify(accounts_response.to_dict())
 
     # Checks if the user is logged in
     if 'username' in session:
         return render_template('homepage.html', today=datetime.datetime.now(),\
-            username=session['username'], response)
+            username=session['username'], response=response)
     else:
         # If not, links the user to the login page
         return "You are not logged in <br><a href = '/login'></b>" + "click here to log in</b></a>"
 
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@ app.route('/login', methods=['GET', 'POST'])
 def login_page():
     '''
     Loads the login page
@@ -79,27 +79,28 @@ def login_page():
 
     # Checks the username and password provided
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        error = valid_user(username, password)
+        username=request.form['username']
+        password=request.form['password']
+        error=valid_user(username, password)
 
         # If the login failed, logs the failed attempt and shows the user and error message
         # with the reason for the failed login
         if error != "":
             # Adds failed loggin attempt to the logger
             with open('static/failed_loggins.txt', "a", encoding="utf8") as file:
-                date_time = str(datetime.datetime.now())
-                ip_address = request.remote_addr
-                file.writelines(username + ', ' + date_time + ', ' + ip_address + '\n')
+                date_time=str(datetime.datetime.now())
+                ip_address=request.remote_addr
+                file.writelines(username + ', ' + date_time + \
+                                ', ' + ip_address + '\n')
 
             return render_template('login.html', error=error)
 
-        session['username'] = request.form['username']
+        session['username']=request.form['username']
         return redirect('/')
 
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@ app.route('/register', methods=['GET', 'POST'])
 def registration_page():
     '''
     Loads the registration page
@@ -110,26 +111,26 @@ def registration_page():
 
     # Checks the username and password provided
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username=request.form['username']
+        password=request.form['password']
 
         # Checks if the user is alread registered
         if is_registered(username):
-            error = "There is already an account with that username."
+            error="There is already an account with that username."
             return render_template('register.html', error=error)
 
         # Checks if the password is common enough
         if not uncommon_password(password):
-            error = 'That password is too commonly used. Please choose another.'
+            error='That password is too commonly used. Please choose another.'
             return render_template('register.html', error=error)
 
-        error = complex_password(password)
+        error=complex_password(password)
 
         # Checks if the password is complex enough
         if error != "":
             return render_template('register.html', error=error)
 
-        password_hash = sha256_crypt.hash(password)
+        password_hash=sha256_crypt.hash(password)
 
         # Opens the account file and stores the new username and password
         with open('static/accounts.txt', "a", encoding="utf8") as file:
@@ -137,11 +138,11 @@ def registration_page():
             file.writelines(password_hash + '\n')
 
         # Logs in and redirects to homepage
-        session['username'] = request.form['username']
+        session['username']=request.form['username']
         return redirect('/')
 
 
-@app.route('/logout')
+@ app.route('/logout')
 def logout():
     '''
     Logs the user out and returns them to the login page
@@ -151,12 +152,12 @@ def logout():
 
 
 
-@app.route('/update_password', methods=['GET', 'POST'])
+@ app.route('/update_password', methods=['GET', 'POST'])
 def update_password():
     '''
     Loads the page which will enable a logged in user to update their password
     '''
-    username = username=session['username']
+    username=username=session['username']
 
     # Loads the update password page
     if request.method == 'GET':
@@ -164,15 +165,15 @@ def update_password():
 
     # Processes the new password
     if request.method == 'POST':
-        password = request.form['password']
+        password=request.form['password']
 
         # Checks if the password is too common
         if not uncommon_password(password):
-            error = 'That password is too commonly used. Please choose another.'
+            error='That password is too commonly used. Please choose another.'
             return render_template('update_password.html', username=username,\
                 error=error, success=None)
 
-        error = complex_password(password)
+        error=complex_password(password)
 
         # Checks if the password is complex enough
         if error != "":
@@ -180,15 +181,15 @@ def update_password():
                 error=error, success=None)
 
 
-        password_hash = sha256_crypt.hash(password)
+        password_hash=sha256_crypt.hash(password)
 
         # Opens the account file and replaces the old password with the new one
         # First finds the username, marks username_found = 1, then the following line
         # where the old password is will be replaced with the new password
         with open('static/accounts.txt', "r+", encoding="utf8") as fileworker:
-            file = fileworker.readlines()
+            file=fileworker.readlines()
             fileworker.seek(0)
-            username_found = 0
+            username_found=0
 
             # Copies the lines from the old copy of the file to a new copy except the
             # line with the old password is replaced with the new one
@@ -200,14 +201,14 @@ def update_password():
                     # Replaces the old password with the new one
                     if username_found:
                         fileworker.write(password_hash + "\n")
-                        username_found = -1
+                        username_found=-1
 
                     else:
                         # Checks if the username has been found
                         # If it is, marks that it has been found so the password on
                         # the next line can be replaced with the new one
                         if username in line:
-                            username_found = 1
+                            username_found=1
 
                         fileworker.write(line)
 
