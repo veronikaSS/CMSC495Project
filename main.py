@@ -46,13 +46,25 @@ def homepage():
     '''
     Loads the homepage
     '''
+    try:
+      request = AccountsGetRequest(
+          access_token=access_token
+      )
+      accounts_response = client.accounts_get(request)
+    except plaid.ApiException as e:
+      response = json.loads(e.body)
+      return jsonify({'error': {'status_code': e.status, 'display_message':
+                      response['error_message'], 'error_code': response['error_code'], 'error_type': response['error_type']}})
+
+    response = jsonify(accounts_response.to_dict()
+
     # Checks if the user is logged in
     if 'username' in session:
         return render_template('homepage.html', today=datetime.datetime.now(),\
-            username=session['username'])
-
-    # If not, links the user to the login page
-    return "You are not logged in <br><a href = '/login'></b>" + "click here to log in</b></a>"
+            username=session['username'], response)
+    else:
+        # If not, links the user to the login page
+        return "You are not logged in <br><a href = '/login'></b>" + "click here to log in</b></a>"
 
 
 
