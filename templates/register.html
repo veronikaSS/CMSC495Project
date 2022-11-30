@@ -9,41 +9,97 @@ to the website homepage.
 
 -->
 
+<!--Register Form-->
 <!DOCTYPE html>
-<html>
-    <Head>
-        <Title>Register - Budget Tracker</Title>
-    </Head>
-    <body>
-        <h2><font color="#990033">Budget Tracker</font></h2>
-        <hr />
-        <h3>Register</h3>
-        <p>Submit a username and password to register.</p>
+<html lang="en">
 
-        <!-- Provides a form for the user to enter and submit a new username + password -->
-        <form method="POST">
-            <table>
-                <!-- Username field -->
-                <tr>
-                    <td><label for="username">Username</label></td>
-                    <td><input name="username" id="username" required></td>
-                </tr>
+    <head>
+        <meta charset="utf-8">
+            <title>Login</title>
+            <meta
+                content="width=device-width, initial-scale=1.0" name="viewport">
+                <!-- Favicons -->
+                <link
+                    href="img/favicon.png" rel="icon">
+                    <!-- Bootstrap CSS File -->
+                    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"></head>
+                    <body>
+                        <div class="container">
 
-                <!-- Password field -->
-                <tr>
-                    <td><label for="password">Password</label></td>
-                    <td> <input type="password" name="password" id="password" required></td>
-                </tr>
 
-                <tr>
-                    <td colspan='2'><input type="submit" value="Register"></td>
-                </tr>
-            </table>
-        </form>
+                            <br>
+                                <br>
+                                    <br>
+                                        <div class="row col-lg-12">
+                                            <div class="col-lg-5 col-md-8 ">
 
-        <!-- Displays any errors that occur (if the login failed) -->
-        {% if error %}
-        <p color="#FF0000">{{ error }}</p>
-        {% endif %}
-    </body>
-</html>
+                                                {{ form.hidden_tag() }}
+                                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                                {% if messages %}
+                                                    {% for category,message in messages %}
+                                                        <div class="alert alert-{{ category }}">{{message}}</div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% endwith %}
+                                                <h5 class="text-muted">
+                                                    <u>Register</u>
+                                                </h5>
+                                                <br>
+
+                                                    <form method="POST" action="" class="">
+                                                        {{ form.hidden_tag() }}
+
+                                                        <div class="form-group">
+                                                            {{ form.email.label(class="form-control-label")}}
+                                                            {% if form.email.errors %}
+                                                                {{ form.email(class="form-control form-control-sm is-invalid")}}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.email.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% else %}
+                                                                {{ form.email(class="form-control form-control-sm")}}
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="form-group">
+                                                            {{ form.password.label(class="form-control-label")}}
+                                                            {% if form.password.errors %}
+                                                                {{ form.password(class="form-control form-control-sm  is-invalid")}}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.password.errors %}
+                                                                        <span>{{error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% else %}
+                                                                {{ form.password(class="form-control form-control-sm") }}
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="form-group">
+                                                            {{ form.confirm_password.label(class="form-control-label") }}
+                                                            {% if form.confirm_password.errors %}
+                                                                {{ form.confirm_password(class="form-control  form-control-sm is-invalid")}}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.confirm_password.errors %}
+                                                                        <span>{{error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% else %}
+                                                                {{ form.confirm_password(class="form-control form-control-sm") }}
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="form-group mt-5 col-6 row">
+                                                            {{form.submit(class="btn btn-success btn-sm btn-block")}}
+                                                        </div>
+                                                        <border-top class="pt-3">
+                                                            <small class="text-muted">
+                                                                Already A Member ?
+                                                                <a href="{{ url_for('login') }}">Login</a>
+                                                            </border-top>
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </body>
+                                    </html>
