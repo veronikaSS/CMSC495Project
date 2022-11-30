@@ -1,0 +1,59 @@
+<!--Rendered Home Page-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Budget Tracker</title>
+        <link rel="stylesheet" type="text/css" href="css/960_12_col.css"/>
+            <style>
+                * {
+                    width: 90%;
+                    margin: 0 auto;
+                    font-family: Arial, Verdana, sans-serif; 
+                    color: #665544;
+                    text-align: center;}
+                #nav, #feature, #footer {
+                    margin: 1%;
+                }
+                .column1, .column2, .column3 {
+                    width:28.7%;
+                    float: left;
+                    margin: 1%;
+                }
+                .column3 {
+                    margin-right: 0%;
+                }
+                #feature, .article {
+                    height: 10em;
+                    padding: 20px 0px 5px 0px;
+                    margin-bottom: 1em;
+                    background-color: #efefef;}
+                li {
+                    display: inline;
+                    padding: 0.5em;}
+
+                
+            </style>
+    </head>
+                    
+    <div class="container_12 clearfix">
+        <div id="header" class="grid_12">
+            <h1>Budget Tracker App</h1>
+            <!--heading level 2-->
+            <p>LOCAL TIME :
+                {{ now }}</p>
+            <div id="nav">
+                <ul>
+                    <li><a href="/" class="links">Home</a></li>
+                    <li><a href="/stats" class="links">Stats</a></li>
+                    <li><a href="/about" class="links">About</a></li>
+                    <li><a href="/update/password" class="links">Update Password</a></li>
+                    <li><a href="/logout" class="links" style="color:red">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>   
+</body>
+    {% block content %}{% endblock content %}
+</body>
+</html>
