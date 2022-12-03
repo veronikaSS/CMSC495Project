@@ -1,0 +1,33 @@
+<!--Rendered Index Page-->
+
+<!--extends HTML to base-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<body> 
+    <div id="content">
+        <div id="feature">
+            <h1>Current Balance</h1>
+            <h2>(Balance will display here)</h2>
+        </div>
+        <div class="article column1">
+            <p>Transaction History</p>
+            <p>Feature to view all past transactions</p>
+        </div>
+        <div class="article column2">
+            <p>Spending Breakdown</p>
+            <p>(Feature to view graph of overall spending in categories)</p>
+        </div>
+        <div class="article column3">
+            <p>Save for It!</p>
+            <p>(Feature that allows user to set aside money</p>
+            <p>for specific purchase and calculate</p>
+            <p>an estimatated time it will take to save for it)</p>
+        </div>
+        <div id="footer" class="grid_12">
+            <p>&copy; Copyright 2022-2023</p>
+        </div>
+    </div><!-- .container_12 -->
+</body>
+{% endblock content %}

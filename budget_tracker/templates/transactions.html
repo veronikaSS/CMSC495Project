@@ -1,0 +1,76 @@
+<!--Rendered Transactions Page-->
+
+<!--extends HTML to base-->
+{% extends 'base.html' %}
+
+{% block content %}
+
+        <link rel="stylesheet" type="text/css" href="css/960_12_col.css"/>
+        <style>
+            body {
+                font-family:Arial, Verdana, sans-serif;
+                color: #111111;}
+            table {
+                width: 600px;}
+            th, td {
+                padding: 7px 10px 10px 10px;}
+            th {
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                font-size: 90%;
+                border-bottom: 2px solid #111111;
+                border-top: 1px solid #999;
+                text-align: left;
+            }
+            tr.even {
+                background-color: #efefef;
+            }
+            tr:hover {
+                background-color: #c3e6e5;
+            }
+            .money {
+                text-align: right;
+            }
+        
+        </style>
+<body>
+    <div id="content">
+        <div class="container">
+            <h1 class="text-muted mt-5"> Previous Transactions</h1>
+        </div>
+
+        <div class="mt-3">
+            <!--Create Table with Columns and Rows-->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Descritpion</th>
+                        <th class="money">Charge</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Netflix</td>
+                        <td class="money">$5.99</td>
+                        <td>11/30/2022</td>
+                    </tr>
+                    <tr class="even">
+                        <td>Amazon</td>
+                        <td class="money">$30.55</td>
+                        <td>11/28/2022</td>
+                    </tr>
+                    <tr>
+                        <td>Fast Food</td>
+                        <td class="money">$12.54</td>
+                        <td>11/26/2022</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="footer" class="grid_12">
+            <p>&copy; Copyright 2022-2023</p>
+        </div>
+    </div><!-- .container_12 -->
+</body>
+{% endblock content %}
