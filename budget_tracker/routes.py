@@ -14,6 +14,9 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from .utils import plaid_obj
 from .model import Account, PlaidItem
+import plaid
+import settings as settings
+from plaid.api import plaid_api
 
 
 """ failed logins log to log failed login attempts"""
@@ -23,6 +26,20 @@ fileHandler = logging.FileHandler('failed_login_attempts.log')
 format = logging.Formatter(r'%(asctime)s: %(message)s')
 fileHandler.setFormatter(format)
 log.addHandler(fileHandler)
+
+configuration = plaid.Configuration(
+        host=plaid.Environment.Sandbox,
+        api_key={
+            'clientId': settings.PLAID_CLIENT_ID,
+            'secret': settings.PLAID_SECRET_KEY_SANDBOX,
+        }
+    )
+
+print("Client ID: ",settings.PLAID_CLIENT_ID)
+print("Secret Key: ",settings.PLAID_SECRET_KEY_SANDBOX)
+api_client = plaid.ApiClient(configuration)
+client = plaid_api.PlaidApi(api_client)
+print("Client Response: ", client)
 
 
 @app.route('/')
@@ -162,7 +179,6 @@ def create_link_token():
 
 @app.route('/exchange_public_token', methods=['POST'])
 def exchange_public_token(request):
-    client = plaid_obj()
 
     if current_user.is_authenticated:
         body_data = json.loads(request.body.decode())
@@ -179,16 +195,19 @@ def exchange_public_token(request):
 
         try:
             plaid_item = user.plaiditem_set.get(item_id=item_id)
+            print("Get Access Token - Plaid Item: ", plaid_item)
         except:
             new_plaid_item = PlaidItem(
                 user=user, access_token=access_token, item_id=item_id)
             new_plaid_item.save()
             plaid_item = user.plaiditem_set.get(item_id=item_id)
+            print("Get Access Token - New Plaid Item: ", plaid_item)
 
         for account in accounts:
             try:
-                existing_acct = user.account_set.get(
+                existing_acct = user.account.get(
 				    plaid_account_id=account['account_id'])
+                print("Get Access Token - Existing Account: ", existing_acct.__dict__)
                 continue
             except:
                 new_acct = Account()
@@ -200,8 +219,9 @@ def exchange_public_token(request):
                 new_acct.user = user
                 new_acct.item = plaid_item
                 new_acct.save()
+                print("Get Access Token - New Account: ", new_acct.__dict__)
 
-		# Pretty printing in development
+		# Clean print in development
         json.dumps(exchange_response, sort_keys=True, indent=4)
         print("TOKEN EXCHANGE: ")
         print(exchange_response)

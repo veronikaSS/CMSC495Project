@@ -1,3 +1,4 @@
 myproject
 static
-__pycache__
+_pycache_
+budget_tracker/_pycache_
