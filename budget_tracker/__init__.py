@@ -3,12 +3,10 @@ from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy,sqlalchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from utils import *
-from plaid_urls import plaid_urls
+from budget_tracker.utils import *
 from flask import Flask
 
 app = Flask(__name__)
-app.register_blueprint(plaid_urls)
 
 app.config["SECRET_KEY"] = 'CMSC495'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'

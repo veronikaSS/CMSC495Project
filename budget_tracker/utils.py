@@ -1,12 +1,12 @@
 import plaid
-import settings
+import settings as settings
 from plaid.api import plaid_api
 
 # Available environments are
 # 'Production'
 # 'Development'
 # 'Sandbox'
-def plaid_obj(self):
+def plaid_obj():
     configuration = plaid.Configuration(
         host=plaid.Environment.Sandbox,
         api_key={
@@ -15,9 +15,11 @@ def plaid_obj(self):
         }
     )
 
+    print("Client ID: ",settings.PLAID_CLIENT_ID)
+    print("Secret Key: ",settings.PLAID_SECRET_KEY_DEV)
     api_client = plaid.ApiClient(configuration)
     client = plaid_api.PlaidApi(api_client)
-
+    print("Client Response: ", client)
     return client
 
 

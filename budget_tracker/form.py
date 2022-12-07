@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from flask import flash
 from budget_tracker.model import User
 import plaid
-import settings
+import settings as settings
 from plaid.api import plaid_api
 
 

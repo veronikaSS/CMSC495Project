@@ -8,8 +8,6 @@ HOW TO USE:
     - pip install datetime
 2. Save all files / directories to your local machine
 3. Open the project folder in a terminal
-4. Run the following commands:
-    - set FLASK_APP=main.py
-    - $env:FLASK_APP = "main.py"
-    - flask run
+4. Run the following commands in folder:
+    - python app.py
 5. Open your web browser and visit localhost:5000
