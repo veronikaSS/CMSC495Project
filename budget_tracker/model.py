@@ -41,3 +41,31 @@ class Account(db.Model):
 
     def __str__(self):
         return self.budget_text
+
+class Category(db.Model):
+    description = db.Column(db.Text(200), unique=True, nullable=False)
+    parent_category =  db.Column(db.String(200),  primary_key=True, nullable=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=None)
+    custom = db.Column(db.Boolean, default=False, nullable=False)
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True, auto=True)
+    account = db.Column(db.ForeignKey('account'), null=True, blank=True)
+    account_owner = db.Column(db.String(200), null=True)
+    amount = db.Column(db.Float(12), decimal_places=2, null=True)
+    authorized_date = db.Column(db.DateTime, null=True)
+    builtin_category =db.Column(db.ForeignKey('Category'), null=True, blank=True)
+    category_id = db.Column(db.String(200), null=True)
+    date =db.Column(db.DateTime, null=False, default=datetime.now())
+    iso_currency_code = db.Column(db.String(200), null=True)
+    location =db.Column(db.String(200), null=True)
+    merchant_name = db.Column(db.String(200), null=True)
+    name = db.Column(db.String(200), null=True)
+    payment_meta = db.Column(db.String(200), null=True)
+    payment_channel = db.Column(db.String(200), null=True)
+    pending = db.Column(db.Boolean, null=True)
+    pending_transaction_id = db.Column(db.String(200), null=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __str__(self):
+        return self.transaction_text

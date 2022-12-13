@@ -161,7 +161,8 @@ def create_link_token():
     print("User: ", user.id)
     # Create a link_token for the given user
     client = plaid_obj()
-    print("Response recieved...")
+    print("Client Obect:", client)
+    print("Client Object Created....")
     request = LinkTokenCreateRequest(
             products=[Products("auth")],
             client_name="Nope",
@@ -172,7 +173,7 @@ def create_link_token():
             )
         )
     response = client.link_token_create(request)
-    print("TOKEN CREATED: ", response)
+    print("TOKEN CREATED: ", response.__dict__)
     # Send the data to the client
     return jsonify(response.to_dict())
 
