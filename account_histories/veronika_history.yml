@@ -1,12 +1,20 @@
 categories:
 - Income
 - Eating Out
-- fgfd
+- Subscriptions
+- Paycheck
 transactions:
-- amount: 4.0
-  category: fgfd
+- amount: 19.99
+  category: Subscriptions
   day: 1
   month: 1
-  title: bbfd
+  title: Netflix Subscription
   type: withdrawal
+  year: 2010
+- amount: 100.0
+  category: Paycheck
+  day: 1
+  month: 4
+  title: Paycheck
+  type: deposit
   year: 2010

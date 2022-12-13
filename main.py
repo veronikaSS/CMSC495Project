@@ -36,6 +36,7 @@ from passlib.hash import sha256_crypt
 import yaml
 import os
 import matplotlib.pyplot as plt
+import time
 
 app = Flask(__name__)
 app.secret_key = "CMSC495"
@@ -55,21 +56,30 @@ def homepage():
         print(history)
         transactions = history['transactions']
         categories = history['categories']
-        income = 0
-        expenses = 0
+
+        # Checking if there is any financial history to display, if not then show a message on the page directing
+        # the user where to get started
+        if len(transactions) == 0:
+            return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'], empty='yes')
 
         # Calculating the income and expenses of the user's recorded financial history
+        income = 0
+        expenses = 0
         for transaction in transactions:
-            amount = transaction['amount']
-            if amount > 0:
-                income += amount
+            if transaction['type'] == 'deposit':
+                income += transaction['amount']
             else:
-                expenses += amount
+                expenses += transaction['amount']
 
+        # Create bar chart to compare income vs expenses
+        x = ['Income', 'Expenses']
+        y = [income, expenses]
+        plt.bar(x, y, color='g')
+        plt.title("Income vs. Expenses")
+        plt.ylabel("US Dollars $")
+        plt.savefig('static/bar_graph.png', dpi=300, bbox_inches='tight')
 
-
-        return render_template('homepage.html', today=datetime.datetime.now(),\
-            username=session['username'])
+        return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'], empty=None)
 
     # If not, links the user to the login page
     return "You are not logged in <br><a href = '/login'></b>" + "click here to log in</b></a>"
@@ -402,10 +412,6 @@ def update_financial_history():
         except:
             return render_template('update_financial_history.html', username=username, categories=categories, \
                                    error='Error! Please enter a numeric value for the amount!', success=None)
-
-        # If the transaction was a withdrawal then the account is negative
-        if type == 'withdrawal':
-            amount *= -1
 
         # If the user added a new category, add it to the lsit of categories
         if category not in categories:

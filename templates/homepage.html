@@ -21,8 +21,15 @@ This document outlines the homepage of the website.
             <a href="http://localhost:5000/update_password">Update Password</a> </p>
 	   	<hr />
 
-		<!-- homepage content -->
+		<!-- Displays any errors that occur (if the amount was invalid and why) -->
+        {% if empty %}
+        <p> No financial history yet. Visit <a href="http://localhost:5000/update_financial_history">this page</a> to begin filling out financial history.</p>
 
+		<!-- homepage content -->
+		{% else %}
+		<img src="/static/bar_graph.png" alt="Income vs. Expense Report" height="300">
+
+		{% endif %}
         <p><br/>Local Time: {{ today }}</p>
 	</body>
 </html>
