@@ -27,6 +27,9 @@ This document outlines the homepage of the website.
 
 		<!-- homepage content -->
 		{% else %}
+		<h3>Income: ${{ income }} </h3>
+		<h3>Expenses: ${{ expenses }} </h3>
+		<h3>Net Difference: ${{ net }} </h3>
 		<table>
 			<tr>
 				<td> <img src="/static/bar_graph.png" alt="Income vs. Expense Report" height="300" width="300"> </td>

@@ -58,7 +58,8 @@ def homepage():
         # Checking if there is any financial history to display, if not then show a message on the page directing
         # the user where to get started
         if len(transactions) == 0:
-            return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'], empty='yes')
+            return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
+                                   empty='yes', income=None, expenses=None, net=None)
 
         # Calculating the income and expenses of the user's recorded financial history
         income = 0
@@ -123,7 +124,8 @@ def homepage():
         plt.savefig('static/pie_chart2.png', dpi=300, bbox_inches='tight')
         plt.cla()
 
-        return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'], empty=None)
+        return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
+                               empty=None, income=str(income), expenses=str(expenses), net=str(income-expenses))
 
     # If not, links the user to the login page
     return "You are not logged in <br><a href = '/login'></b>" + "click here to log in</b></a>"

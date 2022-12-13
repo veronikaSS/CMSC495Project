@@ -136,6 +136,12 @@ This document outlines the webpage to update a user's financial history.
             <input type="text" id="category" name="category">
             <p>You may use one of the existing categories or enter a new one.</p>
             <p>Existing Categories: {{ categories }}</p>
+            <script>
+                console.log();
+                Array.from(categories).forEach(function (element) {
+                        console.log(element)
+                      });
+            </script>
 
             <!-- Submit button -->
             <input type="submit" value="Submit">
