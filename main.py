@@ -27,6 +27,7 @@ provided a link back to the homepage.
 
 '''
 import datetime
+from datetime import date
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -80,12 +81,6 @@ def homepage():
                 index = categories.index(category)
                 expense_category_amounts[index] += amount
 
-        print('categories: ' + str(categories))
-        print('income_categories: ' + str(income_categories))
-        print('income_category_amounts: ' + str(income_category_amounts))
-        print('expense_categories: ' + str(expense_categories))
-        print('expense_category_amounts: ' + str(expense_category_amounts))
-
         for category in categories:
             if category in income_categories:
                 index = income_categories.index(category)
@@ -101,22 +96,20 @@ def homepage():
         # Create and save a bar graph that compares income vs expenses
         x = ['Income', 'Expenses']
         y = [income, expenses]
-        print('x: ' + str(x))
-        print('y: ' + str(y))
-
         f1 = plt.figure()
         plt.bar(x, y, color='g')
         plt.title("Income vs. Expenses")
         plt.ylabel("US Dollars $")
         plt.savefig('static/bar_graph.png', dpi=300, bbox_inches='tight')
-        #plt.cla()
 
+        # Create and save a pie chart with a breakdown of income by category
         plt.clf()
         f2 = plt.figure()
         plt.pie(income_category_amounts, labels=income_categories)
         plt.title("Income Category Breakdown")
         plt.savefig('static/pie_chart1.png', dpi=300, bbox_inches='tight')
 
+        # Create and save a pie chart with a breakdown of expense by category
         plt.clf()
         f3 = plt.figure()
         plt.pie(expense_category_amounts, labels=expense_categories)
@@ -421,12 +414,19 @@ def get_history_filepath():
 
 def get_history():
     filepath = get_history_filepath()
+
     if os.path.exists(filepath):
         with open(filepath) as f:
             history = yaml.safe_load(f)
         return history
 
-    return {'transactions' : [], 'categories' : []}
+    return {'transactions' : [], 'categories' : [], 'goal' : {'name' : '', 'amount' : 0, 'month' : 0, 'day' : 0, 'year' : 0} }
+
+
+def save_history(history):
+    # Writing the new transaction to the user's financial history file
+    with open(get_history_filepath(), 'w') as f:
+        yaml.dump(history, f)
 
 
 # Route for update_financial_history.html
@@ -441,7 +441,7 @@ def update_financial_history():
                                error=None, success=None)
 
     # If a form submission, evaluate the form submission
-    if request.method == 'POST':
+    elif request.method == 'POST':
         title = request.form['title']
         category = request.form['category']
         amount = request.form['amount']
@@ -477,8 +477,94 @@ def update_financial_history():
             history['categories'].append(category)
 
         # Writing the new transaction to the user's financial history file
-        with open(get_history_filepath(), 'w') as f:
-            yaml.dump(history, f)
+        save_history(history)
 
         return render_template('update_financial_history.html', username=username, categories=history['categories'], \
                                error=None, success='yes')
+
+
+def get_gap(amount):
+    history = get_history()
+    income = 0
+    expenses = 0
+    for transaction in history['transactions']:
+        if transaction['type'] == 'deposit':
+            income += transaction['amount']
+        else:
+            expenses += transaction['amount']
+    return income - expenses - amount
+
+
+@app.route('/goal', methods=['GET', 'POST'])
+def goal():
+    history = get_history()
+    name = history['goal']['name']
+
+    if request.method == 'GET':
+        if name == '':
+            return render_template('goal.html', set=None, error=None, name=None, amount=None,
+                                   days=None, achieved=None, gap=None)
+
+        amount = history['goal']['amount']
+        year = history['goal']['year']
+        month = history['goal']['month']
+        day = history['goal']['day']
+        goal_day = date(year, month, day)
+        today = date.today()
+        days = int((goal_day - today).days)
+        gap = get_gap(amount)
+        achieved = 'no'
+        if gap >= 0:
+            achieved = 'yes'
+
+        return render_template('goal.html', set='yes', error=None, name=name, amount=str(amount),
+                               days=str(days), achieved=achieved, gap=gap)
+
+    elif request.method == 'POST':
+        name = request.form['name']
+        amount = request.form['amount']
+        month = int(request.form['month'])
+        day = int(request.form['day'])
+        year = int(request.form['year'])
+
+        # Checks that a proper name was given
+        if name == '':
+            return render_template('goal.html', set=None, error='Error! Please, give your goal a name.',
+                                   name=None, amount=None, days=None, achieved=None, gap=None)
+
+        # Checking that the amount given is a positive number
+        try:
+            amount = int(amount)
+            # Ensuring the amount is positive
+            if amount <= 0:
+                raise Exception()
+        except:
+            return render_template('goal.html', set=None,
+                                   error='Error! Please, give a positive numeric amount for your goal amount.',
+                                   name=None, amount=None, days=None, achieved=None, gap=None)
+
+        goal_day = date(year, month, day)
+        today = date.today()
+        days = int((goal_day - today).days)
+
+        if days < 0:
+            return render_template('goal.html', set=None,
+                                   error='Error! Please provide a deadline date in the future.',
+                                   name=None, amount=None, days=None, achieved=None, gap=None)
+
+        gap = get_gap(amount)
+        achieved = 'no'
+        if gap >= 0:
+            achieved = 'yes'
+        if days < 0:
+            'Goal date already passed'
+
+        history['goal']['name'] = name
+        history['goal']['amount'] = amount
+        history['goal']['month'] = month
+        history['goal']['day'] = day
+        history['goal']['year'] = year
+        save_history(history)
+
+        return render_template('goal.html', set='yes', error=None, name=name, amount=str(amount),
+                               days=str(days), achieved=achieved, gap=str(gap))

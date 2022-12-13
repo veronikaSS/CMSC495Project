@@ -1,16 +1,8 @@
-<!--
-
-update_financial_history.html
-
-This document outlines the webpage to update a user's financial history.
-
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update Financial History - Budget Tracker</title>
+    <title>My Goals - Budget Tracker</title>
 </head>
 <body>
     <h2><font color="#990033">Budget Tracker</font></h2>
@@ -18,27 +10,43 @@ This document outlines the webpage to update a user's financial history.
         <!-- links -->
         <p> {{ username }}   |
 			<a href="http://localhost:5000/">Return to Homepage</a> |
-            <a href="http://localhost:5000/goal">My Goal</a>   |
+            <a href="http://localhost:5000/update_financial_history">Update Financial History</a> |
 			<a href="http://localhost:5000/logout">Logout</a>   |
             <a href="http://localhost:5000/update_password">Update Password</a>
         </p>
         <hr />
 
-        <h3>Update Financial History</h3>
-        <p> Enter a new deposit or withdrawal that has been made to one of your financial accounts.</p>
+        <h3>My Goal</h3>
 
-        <!-- Offers the user a form to enter a new transaction -->
+        {% if set %}
+        <p>Goal Name / Description: {{ name }}</p>
+        <p>Total Amount to Save: ${{ amount }}</p>
+        <p>Deadline: {{ month }} / {{ day }} / {{ year }}</p>
+        <p>Days Left: {{ days }}</p>
+        <p>Amount left to Save: {{ gap }}</p>
+        <p>Achieved: {{ achieved }}</p>
+        <p>If you would like to set a new goal and erase this one, then fill out the form below.</p>
+        {% endif %}
+
+        <p>Use the form below to set a new financial goal!</p>
+
+        <!-- Offers the user a form to enter a new goal -->
         <form method="POST">
-
-            <!-- Type of transaction field -->
-            <label for="type">Transaction Type:  </label>
-            <select name="type" id="type">
-                <option value="withdrawal">Withdrawal</option>
-                <option value="deposit">Deposit</option>
-            </select>
-
-            <!-- Date of transaction field -->
             <table>
+
+                <!-- Goal Name / Description Field -->
+                <tr>
+                    <td> <label for="name">Goal Name / Description:  </label> </td>
+                    <td> <input type="text" id="name" name="name"> </td>
+                </tr>
+
+                <!-- Goal Amount Field -->
+                <tr>
+                    <td> <label for="amount">Total Amount to Save:  $</label> </td>
+                    <td> <input type="text" id="amount" name="amount"> </td>
+                </tr>
+
+                <tr><td><p> Deadline Date </p></td></tr>
                 <tr>
                     <!-- Month of transaction field -->
                     <td><label for="month">Month:  </label></td>
@@ -119,44 +127,15 @@ This document outlines the webpage to update a user's financial history.
                         </select>
                     </td>
                 </tr>
+
+                <!-- Submit button -->
+                <tr> <td><input type="submit" value="Submit"> </td></tr>
+
             </table>
-
-            <!-- Transaction title field -->
-            <label for="title">Title:  </label>
-            <input type="text" id="title" name="title">
-
-            <table>
-                <tr>
-                    <td> <label for="amount">Amount:  $</label> </td>
-                    <td> <input type="text" id="amount" name="amount"> </td>
-                </tr>
-            </table>
-
-            <!-- Transaction category field -->
-            <label for="category">Category:  </label>
-            <input type="text" id="category" name="category">
-            <p>You may use one of the existing categories or enter a new one.</p>
-            <p>Existing Categories: {{ categories }}</p>
-            <script>
-                console.log();
-                Array.from(categories).forEach(function (element) {
-                        console.log(element)
-                      });
-            </script>
-
-            <!-- Submit button -->
-            <input type="submit" value="Submit">
         </form>
 
-        <!-- Displays any errors that occur (if the amount was invalid and why) -->
         {% if error %}
         <p color="#FF0000">{{ error }}</p>
         {% endif %}
-
-        <!-- Lets the user know if the update was successful -->
-        {% if success %}
-        <p>Success! Financial history updated! Add more on this page or <a href="http://localhost:5000/">click here to return to the homepage.</a></p>
-        {% endif %}
-
 </body>
 </html>

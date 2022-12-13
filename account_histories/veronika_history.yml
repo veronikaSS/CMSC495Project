@@ -1,43 +1,8 @@
-categories:
-- Income
-- Eating Out
-- Refunds
-- Paycheck
-- Housing
-- Groceries
-transactions:
-- amount: 10.0
-  category: Refunds
+categories: []
+goal:
+  amount: 250
   day: 1
   month: 1
-  title: Refund
-  type: deposit
-  year: 2010
-- amount: 18.0
-  category: Eating Out
-  day: 1
-  month: 1
-  title: Sushi
-  type: withdrawal
-  year: 2010
-- amount: 400.0
-  category: Paycheck
-  day: 1
-  month: 1
-  title: Paycheck
-  type: deposit
-  year: 2010
-- amount: 300.0
-  category: Housing
-  day: 1
-  month: 1
-  title: Rent
-  type: withdrawal
-  year: 2010
-- amount: 115.0
-  category: Groceries
-  day: 1
-  month: 1
-  title: Wegmans trip
-  type: withdrawal
-  year: 2010
+  name: Buy a house
+  year: 2023
+transactions: []
