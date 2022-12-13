@@ -33,9 +33,14 @@ from flask import request
 from flask import redirect
 from flask import session
 from passlib.hash import sha256_crypt
+import yaml
+import os
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 app.secret_key = "CMSC495"
+categories = ['Income', 'Eating Out']
+transactions = []
 
 
 
@@ -46,6 +51,23 @@ def homepage():
     '''
     # Checks if the user is logged in
     if 'username' in session:
+        history = get_history()
+        print(history)
+        transactions = history['transactions']
+        categories = history['categories']
+        income = 0
+        expenses = 0
+
+        # Calculating the income and expenses of the user's recorded financial history
+        for transaction in transactions:
+            amount = transaction['amount']
+            if amount > 0:
+                income += amount
+            else:
+                expenses += amount
+
+
+
         return render_template('homepage.html', today=datetime.datetime.now(),\
             username=session['username'])
 
@@ -165,12 +187,12 @@ def uncommon_password(password):
 def complex_password(password):
     '''
     Checks if the given password is complex enough
-    A password complexity should be enforced to include at least 12 characters in length, and
+    A password complexity should be enforced to include at least 8 characters in length, and
     include at least 1 uppercase character, 1 lowercase character, 1 number and 1 special character
     '''
     # Checks if the length is valid
-    if len(password) < 12 :
-        return "Your password must be at least 12 characters long."
+    if len(password) < 8 :
+        return "Your password must be at least 8 characters long."
 
     uppercase_included = False
     lowercase_included = False
@@ -334,3 +356,78 @@ def update_password():
             fileworker.truncate()
 
         return render_template('update_password.html', username=username, error=None, success='yes')
+
+
+def get_history_filepath():
+    username = session['username']
+    return os.getcwd() + '\\account_histories\\' + username + '_history.yml'
+
+
+def get_history():
+    filepath = get_history_filepath()
+    if os.path.exists(filepath):
+        with open(filepath) as f:
+            history = yaml.safe_load(f)
+        return history
+
+    return {'transactions' : transactions, 'categories' : categories}
+
+
+# Route for update_financial_history.html
+@app.route('/update_financial_history', methods=['GET', 'POST'])
+def update_financial_history():
+    username = session['username']
+
+    # If not a form submission then go through to the page
+    if request.method == 'GET':
+        return render_template('update_financial_history.html', username=username, categories=categories, \
+                               error=None, success=None)
+
+    # If a form submission, evaluate the form submission
+    if request.method == 'POST':
+        title = request.form['title']
+        category = request.form['category']
+        amount = request.form['amount']
+
+        # Checking if all fields have been filled in
+        if title == '' or category == '' or amount == '':
+            return render_template('update_financial_history.html', username=username, categories=categories, \
+                                   error='Error! Please fill in all fields!', success=None)
+
+        # Attempting to convert the amount the user entered for this transaction to a float
+        try:
+            amount = float(amount)
+
+        # If the user entered a non float, then display an error on the page
+        except:
+            return render_template('update_financial_history.html', username=username, categories=categories, \
+                                   error='Error! Please enter a numeric value for the amount!', success=None)
+
+        # If the transaction was a withdrawal then the account is negative
+        if type == 'withdrawal':
+            amount *= -1
+
+        # If the user added a new category, add it to the lsit of categories
+        if category not in categories:
+            categories.append(category)
+
+        transaction = {}
+        transaction['type'] = request.form['type']
+        transaction['title'] = title
+        transaction['amount'] = amount
+        transaction['category'] = category
+        transaction['month'] = int(request.form['month'])
+        transaction['day'] = int(request.form['day'])
+        transaction['year'] = int(request.form['year'])
+
+        history = get_history()
+        transactions.append(transaction)
+        history['transactions'] = transactions
+        history['categories'] = categories
+
+        # Writing the new transaction to the user's financial history file
+        with open(get_history_filepath(), 'w') as f:
+            yaml.dump(history, f)
+
+        return render_template('update_financial_history.html', username=username, categories=categories, \
+                               error=None, success='yes')

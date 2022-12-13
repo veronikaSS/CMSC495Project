@@ -1,0 +1,12 @@
+categories:
+- Income
+- Eating Out
+- fgfd
+transactions:
+- amount: 4.0
+  category: fgfd
+  day: 1
+  month: 1
+  title: bbfd
+  type: withdrawal
+  year: 2010

@@ -14,9 +14,15 @@ This document outlines the homepage of the website.
 	<body>
 		<h2><font color="#990033">Budget Tracker</font></h2>
 
-        <p> {{ username }}   |   <a href="http://localhost:5000/logout">Logout</a>   |   
+		<!-- links -->
+        <p> {{ username }}   |
+			<a href="http://localhost:5000/update_financial_history">Update Financial History</a> |
+			<a href="http://localhost:5000/logout">Logout</a>   |
             <a href="http://localhost:5000/update_password">Update Password</a> </p>
-	   
+	   	<hr />
+
+		<!-- homepage content -->
+
         <p><br/>Local Time: {{ today }}</p>
 	</body>
 </html>
