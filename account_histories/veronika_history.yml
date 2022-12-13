@@ -1,8 +1,48 @@
-categories: []
+categories:
+- Paycheck
+- Eating Out
+- Housing
+- Refunds
+- Groceries
 goal:
-  amount: 250
+  amount: 630
   day: 1
   month: 1
-  name: Buy a house
+  name: Plane Ticker
   year: 2023
-transactions: []
+transactions:
+- amount: 790.0
+  category: Paycheck
+  day: 8
+  month: 11
+  title: Paycheck
+  type: deposit
+  year: 2022
+- amount: 18.0
+  category: Eating Out
+  day: 14
+  month: 11
+  title: Sushi
+  type: withdrawal
+  year: 2022
+- amount: 580.0
+  category: Housing
+  day: 28
+  month: 11
+  title: Rent
+  type: withdrawal
+  year: 2010
+- amount: 20.0
+  category: Refunds
+  day: 3
+  month: 12
+  title: Store Refund
+  type: deposit
+  year: 2010
+- amount: 114.02
+  category: Groceries
+  day: 1
+  month: 1
+  title: Trip to Food Lion
+  type: withdrawal
+  year: 2010

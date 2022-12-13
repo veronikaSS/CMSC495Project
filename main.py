@@ -44,7 +44,7 @@ app.secret_key = "CMSC495"
 
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def homepage():
     '''
     Loads the homepage
@@ -52,27 +52,63 @@ def homepage():
     # Checks if the user is logged in
     if 'username' in session:
         history = get_history()
-        print('history: ' + str(history))
-        transactions = history['transactions']
+        transactions = history['transactions'].copy()
+
+        if request.method == 'POST':
+            month1 = int(request.form['month1'])
+            day1 = int(request.form['day1'])
+            year1 = int(request.form['year1'])
+            month2 = int(request.form['month2'])
+            day2 = int(request.form['day2'])
+            year2 = int(request.form['year2'])
+
+            date1 = date(year1, month1, day1)
+            date2 = date(year2, month2, day2)
+
+            print('date1: ' + str(date1))
+            print('date2: ' + str(date2))
+
+            if date1 > date2:
+                return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
+                                       empty=None, income=None, expenses=None, net=None, show=None,
+                                       error='Error! The second date must be later than the first date.', transactions=None)
+
+            for transaction in transactions:
+                day = int(transaction['day'])
+                month = int(transaction['month'])
+                year = int(transaction['year'])
+                tdate = date(year, month, day)
+                if tdate < date1 or tdate > date2:
+                    transactions.remove(transaction)
+
+
         categories = history['categories']
 
         # Checking if there is any financial history to display, if not then show a message on the page directing
         # the user where to get started
         if len(transactions) == 0:
-            return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
-                                   empty='yes', income=None, expenses=None, net=None)
+            if len(history['transactions']) != 0:
+                return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
+                                   empty=None, income=None, expenses=None, net=None, show=None, error=None, transactions=None)
+            else:
+                return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
+                                   empty='yes', income=None, expenses=None, net=None, show='yes', error=None,
+                                       transactions=None)
 
-        # Calculating the income and expenses of the user's recorded financial history
         income = 0
         expenses = 0
         income_categories = categories.copy()
         expense_categories = categories.copy()
         income_category_amounts = [0] * len(categories)
         expense_category_amounts = [0] * len(categories)
+        transaction_string = ''
+
+        # Calculating the income and expenses of the user's recorded financial history
         for transaction in transactions:
             category = transaction['category']
             amount = transaction['amount']
-            if transaction['type'] == 'deposit':
+            type = transaction['type']
+            if type == 'deposit':
                 income += amount
                 index = categories.index(category)
                 income_category_amounts[index] += amount
@@ -80,6 +116,18 @@ def homepage():
                 expenses += amount
                 index = categories.index(category)
                 expense_category_amounts[index] += amount
+
+            # Adding this transaction to the transaction string
+            day = transaction['day']
+            month = transaction['month']
+            year = transaction['year']
+            title = transaction['title']
+            transaction_string += 'Date: ' + str(month) + '/' + str(day) + '/' + str(year) + '\n'
+            transaction_string += 'Title: ' + title + '\n'
+            transaction_string += 'Type: ' + type + '\n'
+            transaction_string += 'Amount: $' + str(amount) + '\n'
+            transaction_string += 'Category: ' + category + '\n\n'
+
 
         for category in categories:
             if category in income_categories:
@@ -118,7 +166,8 @@ def homepage():
         plt.cla()
 
         return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'],
-                               empty=None, income=str(income), expenses=str(expenses), net=str(income-expenses))
+                               empty=None, income=str(income), expenses=str(expenses), net=str(income-expenses),
+                               show='yes', error=None, transactions=transaction_string)
 
     # If not, links the user to the login page
     return "You are not logged in <br><a href = '/login'></b>" + "click here to log in</b></a>"
@@ -503,7 +552,7 @@ def goal():
     if request.method == 'GET':
         if name == '':
             return render_template('goal.html', set=None, error=None, name=None, amount=None,
-                                   days=None, achieved=None, gap=None)
+                                   days=None, achieved=None, gap=None, month=None, day=None, year=None)
 
         amount = history['goal']['amount']
         year = history['goal']['year']
@@ -518,7 +567,7 @@ def goal():
             achieved = 'yes'
 
         return render_template('goal.html', set='yes', error=None, name=name, amount=str(amount),
-                               days=str(days), achieved=achieved, gap=gap)
+                               days=str(days), achieved=achieved, gap=gap, month=month, day=day, year=year)
 
     elif request.method == 'POST':
         name = request.form['name']
@@ -530,7 +579,8 @@ def goal():
         # Checks that a proper name was given
         if name == '':
             return render_template('goal.html', set=None, error='Error! Please, give your goal a name.',
-                                   name=None, amount=None, days=None, achieved=None, gap=None)
+                                   name=None, amount=None, days=None, achieved=None, gap=None,
+                                   month=None, day=None, year=None)
 
         # Checking that the amount given is a positive number
         try:
@@ -541,7 +591,8 @@ def goal():
         except:
             return render_template('goal.html', set=None,
                                    error='Error! Please, give a positive numeric amount for your goal amount.',
-                                   name=None, amount=None, days=None, achieved=None, gap=None)
+                                   name=None, amount=None, days=None, achieved=None, gap=None,
+                                   month=None, day=None, year=None)
 
         goal_day = date(year, month, day)
         today = date.today()
@@ -550,7 +601,8 @@ def goal():
         if days < 0:
             return render_template('goal.html', set=None,
                                    error='Error! Please provide a deadline date in the future.',
-                                   name=None, amount=None, days=None, achieved=None, gap=None)
+                                   name=None, amount=None, days=None, achieved=None, gap=None,
+                                   month=None, day=None, year=None)
 
         gap = get_gap(amount)
         achieved = 'no'
@@ -567,4 +619,5 @@ def goal():
         save_history(history)
 
         return render_template('goal.html', set='yes', error=None, name=name, amount=str(amount),
-                               days=str(days), achieved=achieved, gap=str(gap))
+                               days=str(days), achieved=achieved, gap=str(gap),
+                               month=month, day=day, year=year)
