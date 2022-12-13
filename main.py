@@ -40,8 +40,6 @@ import time
 
 app = Flask(__name__)
 app.secret_key = "CMSC495"
-categories = ['Income', 'Eating Out']
-transactions = []
 
 
 
@@ -53,7 +51,7 @@ def homepage():
     # Checks if the user is logged in
     if 'username' in session:
         history = get_history()
-        print(history)
+        print('history: ' + str(history))
         transactions = history['transactions']
         categories = history['categories']
 
@@ -65,19 +63,65 @@ def homepage():
         # Calculating the income and expenses of the user's recorded financial history
         income = 0
         expenses = 0
+        income_categories = categories.copy()
+        expense_categories = categories.copy()
+        income_category_amounts = [0] * len(categories)
+        expense_category_amounts = [0] * len(categories)
         for transaction in transactions:
+            category = transaction['category']
+            amount = transaction['amount']
             if transaction['type'] == 'deposit':
-                income += transaction['amount']
+                income += amount
+                index = categories.index(category)
+                income_category_amounts[index] += amount
             else:
-                expenses += transaction['amount']
+                expenses += amount
+                index = categories.index(category)
+                expense_category_amounts[index] += amount
 
-        # Create bar chart to compare income vs expenses
+        print('categories: ' + str(categories))
+        print('income_categories: ' + str(income_categories))
+        print('income_category_amounts: ' + str(income_category_amounts))
+        print('expense_categories: ' + str(expense_categories))
+        print('expense_category_amounts: ' + str(expense_category_amounts))
+
+        for category in categories:
+            if category in income_categories:
+                index = income_categories.index(category)
+                if income_category_amounts[index] == 0:
+                    income_category_amounts.pop(index)
+                    income_categories.pop(index)
+            if category in expense_categories:
+                index = expense_categories.index(category)
+                if expense_category_amounts[index] == 0:
+                    expense_category_amounts.pop(index)
+                    expense_categories.pop(index)
+
+        # Create and save a bar graph that compares income vs expenses
         x = ['Income', 'Expenses']
         y = [income, expenses]
+        print('x: ' + str(x))
+        print('y: ' + str(y))
+
+        f1 = plt.figure()
         plt.bar(x, y, color='g')
         plt.title("Income vs. Expenses")
         plt.ylabel("US Dollars $")
         plt.savefig('static/bar_graph.png', dpi=300, bbox_inches='tight')
+        #plt.cla()
+
+        plt.clf()
+        f2 = plt.figure()
+        plt.pie(income_category_amounts, labels=income_categories)
+        plt.title("Income Category Breakdown")
+        plt.savefig('static/pie_chart1.png', dpi=300, bbox_inches='tight')
+
+        plt.clf()
+        f3 = plt.figure()
+        plt.pie(expense_category_amounts, labels=expense_categories)
+        plt.title("Expense Category Breakdown")
+        plt.savefig('static/pie_chart2.png', dpi=300, bbox_inches='tight')
+        plt.cla()
 
         return render_template('homepage.html', today=datetime.datetime.now(), username=session['username'], empty=None)
 
@@ -380,17 +424,18 @@ def get_history():
             history = yaml.safe_load(f)
         return history
 
-    return {'transactions' : transactions, 'categories' : categories}
+    return {'transactions' : [], 'categories' : []}
 
 
 # Route for update_financial_history.html
 @app.route('/update_financial_history', methods=['GET', 'POST'])
 def update_financial_history():
     username = session['username']
+    history = get_history()
 
     # If not a form submission then go through to the page
     if request.method == 'GET':
-        return render_template('update_financial_history.html', username=username, categories=categories, \
+        return render_template('update_financial_history.html', username=username, categories=history['categories'], \
                                error=None, success=None)
 
     # If a form submission, evaluate the form submission
@@ -399,9 +444,12 @@ def update_financial_history():
         category = request.form['category']
         amount = request.form['amount']
 
+        if category not in history['categories']:
+            history['categories'].append(category)
+
         # Checking if all fields have been filled in
         if title == '' or category == '' or amount == '':
-            return render_template('update_financial_history.html', username=username, categories=categories, \
+            return render_template('update_financial_history.html', username=username, categories=history['categories'], \
                                    error='Error! Please fill in all fields!', success=None)
 
         # Attempting to convert the amount the user entered for this transaction to a float
@@ -410,12 +458,8 @@ def update_financial_history():
 
         # If the user entered a non float, then display an error on the page
         except:
-            return render_template('update_financial_history.html', username=username, categories=categories, \
+            return render_template('update_financial_history.html', username=username, categories=history['categories'], \
                                    error='Error! Please enter a numeric value for the amount!', success=None)
-
-        # If the user added a new category, add it to the lsit of categories
-        if category not in categories:
-            categories.append(category)
 
         transaction = {}
         transaction['type'] = request.form['type']
@@ -426,14 +470,13 @@ def update_financial_history():
         transaction['day'] = int(request.form['day'])
         transaction['year'] = int(request.form['year'])
 
-        history = get_history()
-        transactions.append(transaction)
-        history['transactions'] = transactions
-        history['categories'] = categories
+        history['transactions'].append(transaction)
+        if category not in history['categories']:
+            history['categories'].append(category)
 
         # Writing the new transaction to the user's financial history file
         with open(get_history_filepath(), 'w') as f:
             yaml.dump(history, f)
 
-        return render_template('update_financial_history.html', username=username, categories=categories, \
+        return render_template('update_financial_history.html', username=username, categories=history['categories'], \
                                error=None, success='yes')

@@ -1,20 +1,43 @@
 categories:
 - Income
 - Eating Out
-- Subscriptions
+- Refunds
 - Paycheck
+- Housing
+- Groceries
 transactions:
-- amount: 19.99
-  category: Subscriptions
+- amount: 10.0
+  category: Refunds
   day: 1
   month: 1
-  title: Netflix Subscription
+  title: Refund
+  type: deposit
+  year: 2010
+- amount: 18.0
+  category: Eating Out
+  day: 1
+  month: 1
+  title: Sushi
   type: withdrawal
   year: 2010
-- amount: 100.0
+- amount: 400.0
   category: Paycheck
   day: 1
-  month: 4
+  month: 1
   title: Paycheck
   type: deposit
+  year: 2010
+- amount: 300.0
+  category: Housing
+  day: 1
+  month: 1
+  title: Rent
+  type: withdrawal
+  year: 2010
+- amount: 115.0
+  category: Groceries
+  day: 1
+  month: 1
+  title: Wegmans trip
+  type: withdrawal
   year: 2010

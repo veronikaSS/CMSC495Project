@@ -27,8 +27,13 @@ This document outlines the homepage of the website.
 
 		<!-- homepage content -->
 		{% else %}
-		<img src="/static/bar_graph.png" alt="Income vs. Expense Report" height="300">
-
+		<table>
+			<tr>
+				<td> <img src="/static/bar_graph.png" alt="Income vs. Expense Report" height="300" width="300"> </td>
+				<td> <img src="/static/pie_chart1.png" alt="Income Breakdown Chart" height="300" width="300"> </td>
+				<td> <img src="/static/pie_chart2.png" alt="Expense Breakdown Chart" height="300" width="300"> </td>
+			</tr>
+		</table>
 		{% endif %}
         <p><br/>Local Time: {{ today }}</p>
 	</body>
