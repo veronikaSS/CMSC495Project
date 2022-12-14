@@ -1,0 +1,57 @@
+<!--Rendered Spending Page-->
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1 class="text-muted mt-5"> Save for It!</h1>
+    <p class="subtext">Fill out the text fields below to see how long it would take to save for the item you want to
+        buy.</p>
+    <input type="date" id="saveDate">
+    <label>How long do you want to save</label>
+
+    <input type="number" id="amount">
+    <label>How much do you want to save?</label>
+
+    <button onclick="calculate()"> Calculate Savings!</button>
+
+    <p id="months"></p>
+    <p id="weeks"></p>
+</div>
+
+<script>
+    function monthDiff(dateFrom, dateTo) {
+        return dateTo.getMonth() - dateFrom.getMonth() +
+            (12 * (dateTo.getFullYear() - dateFrom.getFullYear()))
+    }
+    function weekDiff(dateFrom, dateTo) {
+        return dateTo.getMonth() - dateFrom.getMonth() +
+            (12 * (dateTo.getFullYear() - dateFrom.getFullYear())) * 4
+    }
+
+    function calculate() {
+        let getDate = document.getElementById("saveDate").value
+        console.log("Date to Save", getDate)
+        let parsedDate = new Date(getDate)
+        let getAmount = document.getElementById("amount").value
+        const getTodayDay = new Date()
+
+        console.log("Date to Save", parsedDate)
+        console.log("Months: ", parsedDate.getMonth())
+        console.log("Amount ", parseFloat(getAmount) )
+
+        var calcMonthlySavings = "You need to save " + parseInt(parseFloat(getAmount) / monthDiff(getTodayDay, parsedDate)) + " for " + monthDiff(getTodayDay, parsedDate) + " months"
+        var calcWeeklySavings = "You need to save " + parseInt(parseFloat(getAmount) / weekDiff(getTodayDay, parsedDate)) + " for " + weekDiff(getTodayDay, parsedDate) + " months"
+
+        var getMonths = document.getElementById("months").innerHTML = calcMonthlySavings
+        var getWeeks = document.getElementById("weeks").innerHTML = calcWeeklySavings
+
+        console.log(getAmount)
+        console.log(getAmount)
+        console.log(getTodayDay)
+        console.log(getMonths)
+        console.log(getWeeks)
+
+    }
+</script>
+{% endblock content %}
